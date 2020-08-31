@@ -1,8 +1,8 @@
 [ SMS_Report     (TRUE),
-  SMS_Group_Name ("BrowserExtensionsV1"),
-  SMS_Class_ID   ("BrowserExtensionsV1") ]
+  SMS_Group_Name ("BrowserExtensions"),
+  SMS_Class_ID   ("BrowserExtensions") ]
 
-class CM_BrowserExtensionsV1 : SMS_Class_Template
+class CM_BrowserExtensions : SMS_Class_Template
 {
     [SMS_Report (TRUE),key ]  uint32     Counter;
     [SMS_Report (TRUE)     ]  string     Name;
