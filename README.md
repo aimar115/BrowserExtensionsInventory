@@ -1,4 +1,4 @@
-# BrowserExtensionsInventory
+# MECM Browser extensions inventory
 
 The Inventory-BrowserExtensions.ps1 script queries the selected profile paths to find installed browser extensions and write them into a custom WMI class to be picked up by ConfigMgr Hardware Inventory
 
@@ -13,5 +13,3 @@ The Inventory-BrowserExtensions.ps1 script queries the selected profile paths to
  Last Modified Date:  31.08.2020 - By Aimar Alesmaa
  
         Added - EDGE Chromium to inventory
-        
-MECM Browser extensions inventory
