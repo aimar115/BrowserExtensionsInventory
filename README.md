@@ -1,4 +1,7 @@
 # BrowserExtensionsInventory
+
+The Inventory-BrowserExtensions.ps1 script queries the selected profile paths to find installed browser extensions and write them into a custom WMI class to be picked up by ConfigMgr Hardware Inventory
+
  Author:  Kevin Saucier
  
  Modified Date:  2019-03-13
