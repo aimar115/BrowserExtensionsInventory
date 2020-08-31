@@ -25,7 +25,7 @@
         </QueryParameters>
         <CommandText>SELECT SYS.Name0 as DeviceName, WS.LastHWScan as LastScanned, CE.ProfilePath0 as 'UserProfile', CE.Browser0 as 'Browser', CE.Name0 as ExtensionName, CE.Version0 as ExtensionVersion, CE.FolderName0 as ExtensionFolder, CE.ScriptLastRan0 as ExtensionDetected --,  *
 FROM v_GS_SYSTEM SYS
-	INNER JOIN v_GS_BrowserExtensionsV10 CE ON CE.ResourceID = SYS.ResourceID
+	INNER JOIN v_GS_BrowserExtensions0 CE ON CE.ResourceID = SYS.ResourceID
 	LEFT OUTER JOIN v_GS_WORKSTATION_STATUS WS ON WS.ResourceID = SYS.ResourceID
 WHERE CE.Name0 IN (@ExtensionNames)
 	and (WS.LastHWScan IS NULL or WS.LastHWScan &gt; DATEADD(DAY,-CAST(@IncludeLastXDays as INT),CAST(GetDate() as date)))
