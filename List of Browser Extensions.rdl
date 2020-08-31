@@ -84,7 +84,7 @@ ORDER BY SYS.Name0, CE.ProfilePath0, Browser, CE.Name0</CommandText>
         </QueryParameters>
         <CommandText>SELECT DISTINCT CE.Name0 as ExtensionName 
 FROM v_GS_SYSTEM SYS
-	INNER JOIN v_GS_BrowserExtensionsV10 CE ON CE.ResourceID = SYS.ResourceID
+	INNER JOIN v_GS_BrowserExtensions0 CE ON CE.ResourceID = SYS.ResourceID
 	LEFT OUTER JOIN v_GS_WORKSTATION_STATUS WS ON WS.ResourceID = SYS.ResourceID
 WHERE (WS.LastHWScan IS NULL or WS.LastHWScan &gt; DATEADD(DAY,-CAST(@IncludeLastXDays as INT),CAST(GetDate() as date)))
 	and CE.Name0 like '%' + @SearchFor + '%'
@@ -102,7 +102,7 @@ ORDER BY CE.Name0</CommandText>
     <DataSet Name="DistinctBrowsers">
       <Query>
         <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
-        <CommandText>SELECT DISTINCT Browser0 as Browser FROM v_GS_BrowserExtensionsV10 ORDER BY Browser</CommandText>
+        <CommandText>SELECT DISTINCT Browser0 as Browser FROM v_GS_BrowserExtensions0 ORDER BY Browser</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
