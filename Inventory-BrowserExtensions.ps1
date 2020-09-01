@@ -1,11 +1,11 @@
 # Author:  Kevin Saucier
-# Modified Date:  2019-03-13
+# Date:  2019-03-13
 # https://social.technet.microsoft.com/Forums/systemcenter/en-US/55b1d256-f3fb-4296-a9e6-2241cc8d4d0d/sccm-report-google-chrome-extensions
 # https://onedrive.live.com/?authkey=%21AKizGCZQhtzsL5Y&id=C4E2658B5ACBA822%2135117&cid=C4E2658B5ACBA822
 
-# Last Modified Date:  31.08.2020 - By Aimar Alesmaa
-#        Added - EDGE Chromium to inventory
-
+# ChangeLog:
+# 31.08.2020  -   Added EDGE Chromium to support
+# 01.09.2020  -   Added multiple profile support for Chrome and EDGE Chromium
 
 # The script queries the selected profile paths to find installed browser extensions and write them into a custom WMI class to be picked up by ConfigMgr Hardware Inventory
 
@@ -21,8 +21,8 @@ $boolInventoryEdgeChromium = $true
 $boolInventoryMozilla = $true
 $boolInventoryEdge = $true
 
-$strChromeProfilePathAppend = "AppData\Local\Google\Chrome\User Data\Default\Extensions"
-$strEdgeChromiumProfilePathAppend = "AppData\Local\Microsoft\Edge\User Data\Default\Extensions"
+$strChromeProfilePathAppend = "AppData\Local\Google\Chrome\User Data"
+$strEdgeChromiumProfilePathAppend = "AppData\Local\Microsoft\Edge\User Data"
 $strMozillaProfilePathAppend = "AppData\Roaming\Mozilla\FireFox\Profiles"
 $strEdgeProfilePath = "$env:ProgramFiles\WindowsApps"
 $CustomWMIClassName = "cm_BrowserExtensions"
@@ -150,23 +150,71 @@ Function InventoryExtensions  ($strUserProfilePath, $strBrowserDataToFind)
 		# For Chrome, just search the given path
 		If ($strBrowserDataToFind -eq "CHROME") 
 			{
-				# Append the Chrome path
-				$strManifestSearchPath = $strUserProfilePath + "\" + $strChromeProfilePathAppend
-				
-				# Read the manifest files
-				GetManifestFiles $strManifestSearchPath $strBrowserDataToFind "manifest.json"
-			}
-        # For Edge Chromium , just search the given path
-        If ($strBrowserDataToFind -eq "EDGECHROMIUM") 
-			{
-				# Append the Chrome path
-				$strManifestSearchPath = $strUserProfilePath + "\" + $strEdgeChromiumProfilePathAppend
-				
-				# Read the manifest files
-				GetManifestFiles $strManifestSearchPath $strBrowserDataToFind "manifest.json"
+                #Append browser profiles path
+                $BrowserProfilesPath =  $strUserProfilePath + '\' + $strChromeProfilePathAppend
+                
+                #IF Browserprofiles path exists
+                IF(Test-Path $BrowserProfilesPath)
+                    {
+                        #Find Browser Profiles
+                        $BrowserProfiles = Get-ChildItem $BrowserProfilesPath | Where-Object {($_.Name -eq 'Default' ) -or ($_.Name -like 'Profile*')} | Select-Object -Property Name 
+                            
+                            foreach($BrowserProfile in $BrowserProfiles)
+                                {
+                                    # ManifestFile Search Path
+                                    $strManifestSearchPath = $BrowserProfilesPath + '\' + $BrowserProfile.Name + '\' + 'extensions'
+
+                                    # IF ManifestSearchPath exists
+                                    IF(Test-Path $strManifestSearchPath)
+                                        {
+                                            # Log extensions folder
+                                            Write-Host
+                                            Write-Host "Found Extensions Folder"
+                                            Write-Host $strManifestSearchPath
+
+                                            # Read the manifest files
+				                            GetManifestFiles $strManifestSearchPath $strBrowserDataToFind "manifest.json"
+                                         }
+                                 }
+                     }
+
 			}
 
-		
+
+        # For Edge Chromium , just search the given path
+        If ($strBrowserDataToFind -eq "EDGECHROMIUM")
+            {
+                #Append browser profiles path
+                $BrowserProfilesPath =  $strUserProfilePath + '\' + $strEdgeChromiumProfilePathAppend
+                
+                #IF Browserprofiles path exists
+                IF(Test-Path $BrowserProfilesPath)
+                    {
+                        #Find Browser Profiles
+                        $BrowserProfiles = Get-ChildItem $BrowserProfilesPath | Where-Object {($_.Name -eq 'Default' ) -or ($_.Name -like 'Profile*')} | Select-Object -Property Name 
+                            
+                            foreach($BrowserProfile in $BrowserProfiles)
+                                {
+                                    # ManifestFile Search Path
+                                    $strManifestSearchPath = $BrowserProfilesPath + '\' + $BrowserProfile.Name + '\' + 'extensions'
+
+                                    # IF ManifestSearchPath exists
+                                    IF(Test-Path $strManifestSearchPath)
+                                        {
+                                            # Log extensions folder
+                                            Write-Host
+                                            Write-Host "Found Extensions Folder"
+                                            Write-Host $strManifestSearchPath
+
+                                            # Read the manifest files
+				                            GetManifestFiles $strManifestSearchPath $strBrowserDataToFind "manifest.json"
+                                         }
+                                 }
+                     }
+
+			}
+
+
 		# If it's Mozilla, we have to extract the packages into a temp folder first
 		If ($strBrowserDataToFind -eq "MOZILLA") 
 			{
@@ -183,7 +231,8 @@ Function InventoryExtensions  ($strUserProfilePath, $strBrowserDataToFind)
 							}
 					}
 			}
-			
+
+
 		# For Edge, we'll use PowerShell cmdlets to get the data
 		If ($strBrowserDataToFind -eq "EDGE") 
 			{
